@@ -67,17 +67,15 @@ export default function Car({
                           <img className='h-full aspect-square rounded mr-2.5' src={image} alt={x.label} />
                           <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                             <div className='font-bold text-base'>{x.label}</div>
-                            <div className='flex justify-between'>
+                            <div className='flex justify-between h-9'>
                               <div className='text-black font-bold'>
                                 <span className='text-xs'>￥</span>
                                 <span className='text-lg'>{x.price}</span>
                               </div>
-                              <div>
-                                <Stepper
-                                  defaultValue={1}
-                                  min={1}
-                                />
-                              </div>
+                              <Stepper
+                                defaultValue={1}
+                                min={1}
+                              />
                             </div>
                           </div>
                         </div>

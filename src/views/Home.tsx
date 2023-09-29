@@ -20,7 +20,7 @@ export default function Home({
               <img className='h-full aspect-square rounded mr-2.5' src={x.image} alt={x.label} />
               <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                 <div className='font-bold text-base'>{x.label}</div>
-                <div className='flex justify-between'>
+                <div className='flex justify-between h-9'>
                   <div className='text-black font-bold'>
                     <span className='text-xs'>￥</span>
                     <span className='text-lg'>{x.price}</span>
