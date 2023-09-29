@@ -5,6 +5,7 @@ import data from '@/data'
 import { useAppDispatch, useCar } from '@/store/hooks'
 import { clearCar, payCar, removeGoodsToCar, updateGoodsItem } from '@/store/actions/car'
 import { useMemo } from 'react'
+import EmptySVG from '@/assets/empty.svg'
 
 type Props = {
   className?: string,
@@ -14,7 +15,7 @@ type Props = {
 const NoCarGoods = () => (
   <div className='no-car-goods text-center'>
     <ErrorBlock
-      image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+      image={EmptySVG}
       style={{
         '--image-height': '150px',
       }}
