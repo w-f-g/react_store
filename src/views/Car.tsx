@@ -56,6 +56,7 @@ export default function Car({
                     return (
                       <SwipeAction
                         key={i}
+                        className='bg-white mb-2.5 rounded-lg'
                         rightActions={[
                           {
                             key: 'delete',
@@ -64,7 +65,7 @@ export default function Car({
                           },
                         ]}
                       >
-                        <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg'>
+                        <div className='flex p-2.5 h-24'>
                           <img className='h-full aspect-square rounded mr-2.5' src={image} alt={x.label} />
                           <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                             <div className='font-bold text-base'>{x.label}</div>
@@ -74,8 +75,9 @@ export default function Car({
                                 <span className='text-lg'>{x.price}</span>
                               </div>
                               <Stepper
-                                defaultValue={1}
                                 min={1}
+                                value={x.count}
+                                defaultValue={1}
                               />
                             </div>
                           </div>
