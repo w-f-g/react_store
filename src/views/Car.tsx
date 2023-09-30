@@ -3,6 +3,8 @@ import { Button, ErrorBlock, Stepper, SwipeAction, Toast } from 'antd-mobile'
 import { DeleteOutline } from 'antd-mobile-icons'
 import data from '@/data'
 import EmptySVG from '@/assets/empty.svg'
+import { observer } from 'mobx-react-lite'
+import { useCar } from '@/store'
 
 type Props = {
   className?: string,
@@ -24,23 +26,37 @@ const NoCarGoods = () => (
   </div>
 )
 
-export default function Car({
+function Car({
   className,
   ...rest
 }: Props) {
-  const _data: CarGoodsItem[] = [
-    {
-      label: '冰鲜柠檬水',
-      price: 4,
-      count: 2,
-    },
-  ]
+  const car = useCar()
 
   const handlePay = () => {
     Toast.show({
       icon: 'loading',
       content: '正在结算…',
+      duration: 0,
+      maskClickable: false,
     })
+    car.payCar().then(() => {
+      Toast.show({
+        icon: 'success',
+        content: '支付成功',
+        duration: 1000,
+      })
+    })
+  }
+
+  const updateGoodsCount = (value: number, goods: CarGoodsItem) => {
+    if (value > 0) {
+      car.updateGoodsItem({
+        ...goods,
+        count: value,
+      })
+    } else {
+      car.removeGoodsToCar(goods)
+    }
   }
   
   return (
@@ -48,23 +64,25 @@ export default function Car({
       <div className="pb-10 h-full">
         <div className='p-2.5 h-full overflow-auto'>
           {
-            _data.length === 0
+            car.goodsList.length === 0
               ? <NoCarGoods />
               : (
-                  _data.map((x, i) => {
+                  car.goodsList.map((x, i) => {
                     const image = data.find(y => y.label === x.label)!.image
                     return (
                       <SwipeAction
                         key={i}
+                        className='bg-white mb-2.5 rounded-lg'
                         rightActions={[
                           {
                             key: 'delete',
                             text: '删除',
                             color: 'danger',
+                            onClick: () => car.removeGoodsToCar(x)
                           },
                         ]}
                       >
-                        <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg'>
+                        <div className='flex p-2.5 h-24'>
                           <img className='h-full aspect-square rounded mr-2.5' src={image} alt={x.label} />
                           <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                             <div className='font-bold text-base'>{x.label}</div>
@@ -74,8 +92,10 @@ export default function Car({
                                 <span className='text-lg'>{x.price}</span>
                               </div>
                               <Stepper
-                                defaultValue={1}
                                 min={1}
+                                value={x.count}
+                                defaultValue={1}
+                                onChange={val => updateGoodsCount(val, x)}
                               />
                             </div>
                           </div>
@@ -88,16 +108,16 @@ export default function Car({
         </div>
       </div>
       {
-        data.length > 0 && (
+        car.goodsList.length > 0 && (
           <div className='flex font-bold text-xs absolute bottom-0 left-0 right-0 bg-white h-10 justify-between p-2 items-center'>
-            <div className='font-normal flex items-center'>
+            <div className='font-normal flex items-center' onClick={() => car.clearCar()}>
               <DeleteOutline className='text-[20px] mr-1' />
               <span>清空</span>
             </div>
             <div>
               <span className='font-normal'>合计</span>
               <span>￥</span>
-              <span className='text-lg mr-2.5'>0</span>
+              <span className='text-lg mr-2.5'>{car.price}</span>
               <Button onClick={handlePay} color='primary' size='small'>结算</Button>
             </div>
           </div>
@@ -106,3 +126,6 @@ export default function Car({
     </div>
   )
 }
+
+const CarPage = observer<Props>(Car)
+export default CarPage
