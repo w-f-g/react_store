@@ -13,9 +13,9 @@ export type TAction<T> = {
 type GetAction<T extends Dispatch> = T extends Dispatch<infer A> ? A : never
 
 export type AppStore = ReturnType<typeof store.getState>
-export type AppDispath = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch
 
-type AppAction = GetAction<AppDispath>
+type AppAction = GetAction<AppDispatch>
 
 export type AppThunkAction<R> = ThunkAction<R, AppStore, unknown, AppAction>
 export type AppThunkDispatch = ThunkDispatch<AppStore, unknown, AppAction>
