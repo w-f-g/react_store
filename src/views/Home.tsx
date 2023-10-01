@@ -19,6 +19,7 @@ export default function Home({
 
   const handleAddToCar = (goods: GoodsItem) => {
     dispatch(addGoodsToCar({
+      id: goods.id,
       label: goods.label,
       price: goods.price,
       count: 1,
@@ -39,10 +40,10 @@ export default function Home({
   return (
     <div className={cn(['p-2.5', className])} {...rest}>
       {
-        data.map((x, i) => {
+        data.map(x => {
           const target = car.find(c => c.label === x.label)
           return (
-            <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg' key={i}>
+            <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg' key={x.id}>
               <img className='h-full aspect-square rounded mr-2.5' src={x.image} alt={x.label} />
               <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                 <div className='font-bold text-base'>{x.label}</div>
