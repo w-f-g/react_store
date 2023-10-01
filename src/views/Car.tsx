@@ -81,11 +81,11 @@ export default function Car({
             car.length === 0
               ? <NoCarGoods />
               : (
-                  car.map((x, i) => {
+                  car.map(x => {
                     const image = data.find(y => y.label === x.label)!.image
                     return (
                       <SwipeAction
-                        key={i}
+                        key={x.id}
                         className='bg-white mb-2.5 rounded-lg'
                         rightActions={[
                           {
