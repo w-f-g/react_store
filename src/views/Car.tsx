@@ -3,6 +3,8 @@ import { Button, ErrorBlock, Stepper, SwipeAction, Toast } from 'antd-mobile'
 import { DeleteOutline } from 'antd-mobile-icons'
 import data from '@/data'
 import EmptySVG from '@/assets/empty.svg'
+import useCarStore, { clearCar, payCar, removeGoodsToCar, updateGoodsItem } from '@/store/car'
+import { useMemo } from 'react'
 
 type Props = {
   className?: string,
@@ -28,19 +30,40 @@ export default function Car({
   className,
   ...rest
 }: Props) {
-  const _data: CarGoodsItem[] = [
-    {
-      label: '冰鲜柠檬水',
-      price: 4,
-      count: 2,
-    },
-  ]
+  
+  const goodsList = useCarStore(state => state.goodsList)
+
+  const price = useMemo(() => {
+    return goodsList.reduce((prev, { count, price: p }) => {
+      return prev + count * p
+    }, 0)
+  }, [goodsList])
 
   const handlePay = () => {
     Toast.show({
       icon: 'loading',
       content: '正在结算…',
+      duration: 0,
+      maskClickable: false,
     })
+    payCar().then(() => {
+      Toast.show({
+        icon: 'success',
+        content: '支付成功',
+        duration: 1000,
+      })
+    })
+  }
+
+  const updateGoodsCount = (value: number, goods: CarGoodsItem) => {
+    if (value > 0) {
+      updateGoodsItem({
+        ...goods,
+        count: value,
+      })
+    } else {
+      removeGoodsToCar(goods)
+    }
   }
   
   return (
@@ -48,20 +71,21 @@ export default function Car({
       <div className="pb-10 h-full">
         <div className='p-2.5 h-full overflow-auto'>
           {
-            _data.length === 0
+            goodsList.length === 0
               ? <NoCarGoods />
               : (
-                  _data.map((x, i) => {
+                  goodsList.map(x => {
                     const image = data.find(y => y.label === x.label)!.image
                     return (
                       <SwipeAction
-                        key={i}
+                        key={x.id}
                         className='bg-white mb-2.5 rounded-lg'
                         rightActions={[
                           {
                             key: 'delete',
                             text: '删除',
                             color: 'danger',
+                            onClick: () => removeGoodsToCar(x),
                           },
                         ]}
                       >
@@ -78,6 +102,7 @@ export default function Car({
                                 min={1}
                                 value={x.count}
                                 defaultValue={1}
+                                onChange={val => updateGoodsCount(val, x)}
                               />
                             </div>
                           </div>
@@ -90,16 +115,16 @@ export default function Car({
         </div>
       </div>
       {
-        data.length > 0 && (
+        goodsList.length > 0 && (
           <div className='flex font-bold text-xs absolute bottom-0 left-0 right-0 bg-white h-10 justify-between p-2 items-center'>
-            <div className='font-normal flex items-center'>
+            <div className='font-normal flex items-center' onClick={() => clearCar()}>
               <DeleteOutline className='text-[20px] mr-1' />
               <span>清空</span>
             </div>
             <div>
               <span className='font-normal'>合计</span>
               <span>￥</span>
-              <span className='text-lg mr-2.5'>0</span>
+              <span className='text-lg mr-2.5'>{price}</span>
               <Button onClick={handlePay} color='primary' size='small'>结算</Button>
             </div>
           </div>

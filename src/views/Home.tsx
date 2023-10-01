@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import data from '@/data'
 import addIcon from '@/assets/add.png'
+import useCarStore, { addGoodsToCar, removeGoodsToCar, updateGoodsItem } from '@/store/car'
+import { Stepper } from 'antd-mobile'
 
 type Props = {
   className?: string,
@@ -11,12 +13,35 @@ export default function Home({
   className,
   ...rest
 }: Props) {
+
+  const goodsList = useCarStore(state => state.goodsList)
+  
+  const handleAddToCar = (goods: GoodsItem) => {
+    addGoodsToCar({
+      id: goods.id,
+      label: goods.label,
+      price: goods.price,
+      count: 1,
+    })
+  }
+
+  const updateGoodsCount = (value: number, goods: CarGoodsItem) => {
+    if (value > 0) {
+      updateGoodsItem({
+        ...goods,
+        count: value,
+      })
+    } else {
+      removeGoodsToCar(goods)
+    }
+  }
   return (
     <div className={cn(['p-2.5', className])} {...rest}>
       {
-        data.map((x, i) => {
+        data.map(x => {
+          const target = goodsList.find(c => c.label === x.label)
           return (
-            <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg' key={i}>
+            <div className='flex p-2.5 bg-white mb-2.5 h-24 rounded-lg' key={x.id}>
               <img className='h-full aspect-square rounded mr-2.5' src={x.image} alt={x.label} />
               <div className='flex flex-col flex-1 overflow-hidden justify-between'>
                 <div className='font-bold text-base'>{x.label}</div>
@@ -25,9 +50,22 @@ export default function Home({
                     <span className='text-xs'>￥</span>
                     <span className='text-lg'>{x.price}</span>
                   </div>
-                  <div>
-                    <img className='w-8 h-8' src={addIcon} alt="add" />
-                  </div>
+                  {
+                    target
+                      ? (
+                        <Stepper
+                          min={0}
+                          value={target.count}
+                          defaultValue={1}
+                          onChange={val => updateGoodsCount(val, target)}
+                        />
+                      )
+                      : (
+                          <div onClick={() => handleAddToCar(x)}>
+                            <img className='w-8 h-8' src={addIcon} alt="add" />
+                          </div>
+                      )
+                  }
                 </div>
               </div>
             </div>
