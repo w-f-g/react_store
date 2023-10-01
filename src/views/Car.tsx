@@ -30,6 +30,7 @@ export default function Car({
 }: Props) {
   const _data: CarGoodsItem[] = [
     {
+      id: 0,
       label: '冰鲜柠檬水',
       price: 4,
       count: 2,
@@ -51,11 +52,11 @@ export default function Car({
             _data.length === 0
               ? <NoCarGoods />
               : (
-                  _data.map((x, i) => {
+                  _data.map(x => {
                     const image = data.find(y => y.label === x.label)!.image
                     return (
                       <SwipeAction
-                        key={i}
+                        key={x.id}
                         className='bg-white mb-2.5 rounded-lg'
                         rightActions={[
                           {
