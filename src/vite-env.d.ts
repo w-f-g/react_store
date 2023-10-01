@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 type GoodsItem = {
+  id: number,
   label: string,
   image: string,
   price: number,
